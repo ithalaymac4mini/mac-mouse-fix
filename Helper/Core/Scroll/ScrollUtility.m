@@ -134,13 +134,6 @@ static NSDictionary *_MFScrollPhaseToIOHIDEventPhase;
     
 }
 
-+ (BOOL)point:(CGPoint)p1 isAboutTheSameAs:(CGPoint)p2 threshold:(int)th {
-    if (abs((int)(p2.x - p1.x)) > th || abs((int)(p2.y - p1.y)) > th) {
-        return NO;
-    }
-    return YES;
-}
-
 /// \note 0 is considered both positive and negative
 + (BOOL)sameSign:(double)n and:(double)m {
     if (n == 0 || m == 0) {
@@ -191,41 +184,6 @@ static NSDictionary *_MFScrollPhaseToIOHIDEventPhase;
             return kMFDirectionUp;
         }
     }
-}
-
-
-static BOOL _mouseDidMove = NO;
-+ (BOOL)mouseDidMove {
-    return _mouseDidMove;
-}
-static CGPoint _previousMouseLocation;
-+ (void)updateMouseDidMoveWithEvent:(CGEventRef)event {
-    
-    /// Checks if cursor moved since the last time this function was called. Writes result into `_mouseDidMove`.
-    ///     Storing result in `_mouseDidMove` instead of returning it, so that different parts of the program can reuse this info
-    /// Passing in event for optimization. Not sure if significant.
-    ///     Update: (Sep 2024) `_mouseDidMove` is only used inside Scroll.m. Not returning is weird and unnecessary, and caused us to write a bug inside Scroll.m I believe.
-    ///                     We did begin implementing a much better replacement for this system in the branch `app-specific`
-    
-    CGPoint mouseLocation = CGEventGetLocation(event);
-    _mouseDidMove = ![ScrollUtility point:mouseLocation
-                          isAboutTheSameAs:_previousMouseLocation
-                                 threshold:10];
-    _previousMouseLocation = mouseLocation;
-}
-
-static BOOL _frontMostAppDidChange;
-+ (BOOL)frontMostAppDidChange {
-    return _frontMostAppDidChange;
-}
-static NSRunningApplication *_previousFrontMostApp;
-+ (void)updateFrontMostAppDidChange {
-    
-    /// Checks if frontmost application changed since the last time this function was called. Writes result into `_frontMostAppDidChange`.
-    
-    NSRunningApplication *frontMostApp = NSWorkspace.sharedWorkspace.frontmostApplication;
-    _frontMostAppDidChange = ![frontMostApp isEqual:_previousFrontMostApp];
-    _previousFrontMostApp = frontMostApp;
 }
 
 @end

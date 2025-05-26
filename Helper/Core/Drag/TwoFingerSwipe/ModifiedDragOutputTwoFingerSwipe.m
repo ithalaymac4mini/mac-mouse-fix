@@ -66,18 +66,20 @@ static dispatch_group_t _momentumScrollWaitGroup;
     [Scroll resetState];
 }
 
-+ (void)handleBecameInUse {
++ (void)handleBecameInUseWithEvent:(CGEventRef)event {
     
     /// Freeze pointer
     if (GeneralConfig.freezePointerDuringModifiedDrag) {
-        [PointerFreeze freezePointerAtPosition:_drag->usageOrigin];
+        [PointerFreeze freezePointerWithEvent:event];
     } else {
-        [PointerFreeze freezeEventDispatchPointAtPosition:_drag->usageOrigin];
+        [PointerFreeze freezeEventDispatchPointWithEvent:event];
     }
     
     /// Setup animator
     [_smoothingAnimator resetSubPixelator];
-    [_smoothingAnimator linkToMainScreen];
+    [HelperState.shared updateBaseValuesWithEvent:event];
+    CGDirectDisplayID dsp = [HelperState.shared displayUnderMousePointer];
+    [_smoothingAnimator linkToDisplay:dsp];
 }
 
 + (void)handleMouseInputWhileInUseWithDeltaX:(double)deltaX deltaY:(double)deltaY event:(CGEventRef)event {

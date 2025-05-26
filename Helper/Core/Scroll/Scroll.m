@@ -27,16 +27,10 @@
 #import "ScrollModifiers.h"
 #import "Actions.h"
 #import "EventUtility.h"
-#import "MathObjc.h"
 
 @import IOKit;
 #import "MFHIDEventImports.h"
 #import "IOUtility.h"
-
-///
-/// There are issues where scrolling stops working intermittently or after a restart [Apr 8 2025]
-///     See this note on the issue: https://github.com/noah-nuebling/notes-public/blob/23361f16a315f48f1f6278161b8cefab50fc3665/mmf/bug-investigation/scrolling-stops-intermittently_apr-2025.md
-///
 
 @implementation Scroll
 
@@ -83,7 +77,7 @@ static CFTimeInterval _lastScrollAnalysisResultTimeStamp;
     if (_eventTap == nil) {
         CGEventMask mask = CGEventMaskBit(kCGEventScrollWheel);
         _eventTap = CGEventTapCreate(kCGHIDEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault, mask, eventTapCallback, NULL);
-        DDLogDebug(@"Scroll.m: _eventTap: %@", _eventTap);
+        DDLogDebug(@"_eventTap: %@", _eventTap);
         CFRunLoopSourceRef runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, _eventTap, 0);
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
         CFRelease(runLoopSource);
@@ -112,7 +106,7 @@ void resetState_Sync(void) {
     });
 }
 void resetState_Unsafe(void) {
-    DDLogDebug(@"Scroll.m: reset-animator");
+    DDLogDebug(@"reset-animator");
     [_animator cancel];
     [GestureScrollSimulator stopMomentumScroll]; /// Not sure if appropriate
     [ScrollAnalyzer resetState];
@@ -137,7 +131,7 @@ void resetState_Unsafe(void) {
 
     
     /// DEBUG
-    DDLogDebug(@"Scroll.m: startReceiving. isReceiving: %d", CGEventTapIsEnabled(_eventTap));
+    DDLogDebug(@"Scroll - startReceiving. isReceiving: %d", CGEventTapIsEnabled(_eventTap));
 
     /// Start event tap
     if (!CGEventTapIsEnabled(_eventTap)) {
@@ -153,7 +147,7 @@ void resetState_Unsafe(void) {
     /// - Also see notes for `- startReceiving`
     
     /// DEBUG
-    DDLogDebug(@"Scroll.m: stopReceiving. isReceiving: %d", CGEventTapIsEnabled(_eventTap));
+    DDLogDebug(@"Scroll - stopReceiving. isReceiving: %d", CGEventTapIsEnabled(_eventTap));
     
     
     /// Stop event tap
@@ -198,13 +192,13 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     
     /// Debug
     
-//    DDLogDebug(@"Scroll.m: SCROOOL EVENT – %@", CGScrollWheelEventDescription(event));
+//    DDLogDebug(@"SCROOOL EVENT – %@", CGScrollWheelEventDescription(event));
     
     /// Handle eventTapDisabled messages
     
     if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
 
-        DDLogDebug(@"Scroll.m: eventTap was disabled by %@", type == kCGEventTapDisabledByTimeout ? @"timeout. Re-enabling." : @"user input.");
+        DDLogDebug(@"Scroll.m eventTap was disabled by %@", type == kCGEventTapDisabledByTimeout ? @"timeout. Re-enabling." : @"user input.");
         
         if (type == kCGEventTapDisabledByTimeout) {
             CGEventTapEnable(_eventTap, true);
@@ -239,14 +233,16 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     CFTimeInterval tickTime = CGEventGetTimestampInSeconds(event);
     
     /// Create copy of event
+    /// We do this, because the original event will become invalid and unusable in the new queue. Edit: Are we sure? Couldn't we just retain the event?
     
-    CGEventRef eventCopy = CGEventCreateCopy(event); /// Create a copy, because the original event will become invalid and unusable in the new queue.
+    CGEventRef eventCopy = CGEventCreateCopy(event);
     
     /// Enqueue heavy processing
     ///  Executing heavy stuff on a different thread to prevent the eventTap from timing out. We wrote this before knowing that you can just re-enable the eventTap when it times out. But this doesn't hurt.
     
     dispatch_async(_scrollQueue, ^{
         heavyProcessing(eventCopy, scrollDeltaAxis1, scrollDeltaAxis2, tickTime);
+        CFRelease(eventCopy);
     });
     
     return nil;
@@ -254,7 +250,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 
 #pragma mark - Main event processing
 
-static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t scrollDeltaAxis2, CFTimeInterval tickTS) {
+static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t scrollDeltaAxis2, CFTimeInterval tickTime) {
     
     /// Declare stuff for later
     static DriverUnsuspender unsuspendDrivers = ^{};
@@ -264,7 +260,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         
         /// Get HIDEvent
         HIDEvent *hidEvent = CGEventGetHIDEvent(event);
-        DDLogDebug(@"Scroll.m: event: %@", hidEvent.description);
+        DDLogDebug(@"Scroll event: %@", hidEvent.description);
         
         
         /// Get sending device
@@ -279,7 +275,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             CFStringRef name = IOHIDDeviceGetProperty(sendingDev, CFSTR(kIOHIDProductKey));
             CFStringRef manufacturer = IOHIDDeviceGetProperty(sendingDev, CFSTR(kIOHIDManufacturerKey));
             
-            DDLogDebug(@"Scroll.m: Device sending scroll: %@ %@", manufacturer, name);
+            DDLogDebug(@"Device sending scroll: %@ %@", manufacturer, name);
         }
     }
 
@@ -313,7 +309,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     
     MFDirection scrollDirection = [ScrollUtility directionForInputAxis:inputAxis inputDelta:scrollDelta invertSetting:_scrollConfig.u_invertDirection horizontalModifier:(_modifications.effectMod == kMFScrollEffectModificationHorizontalScroll)];
     
-    BOOL firstConsecutive = [ScrollAnalyzer peekIsFirstConsecutiveTickWithTickOccuringAt:tickTS direction:scrollDirection config:_scrollConfig];
+    BOOL firstConsecutive = [ScrollAnalyzer peekIsFirstConsecutiveTickWithTickOccuringAt:tickTime direction:scrollDirection config:_scrollConfig];
     
     ///
     /// Update stuff
@@ -329,33 +325,29 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         [TrialCounter.shared handleUse];
         
         /// Update active device
-        [HelperState.shared updateActiveDeviceWithEvent:event];
-        
-        /// Update mouse did move
-        ///     Note: (17.09.2024) We need this in MMF 3, otherwise the displayLink never updates to another display (ScrollUtility.mouseDidMove must be true for the displayLink to update)
-        ///             Discussion:
-        ///             - This code comes from MMF 2 iirc. We originally commented this out for MMF 3.0.0, but re-activated it for 3.0.3.
-        ///                 -> We commented it out since we thought we didn't need it since there are no app-specific settings anymore in MMF 3. However, I overlooked the display-link-updating stuff, which makes it so this is still needed under MMF 3.
-        ///             - Having this state stored inside of ScrollUtility instead of a variable defined in Scroll.m is pretty weird, and might have contributed to us commenting it out for MMF 3 even though it was still used.
-        [ScrollUtility updateMouseDidMoveWithEvent:event];
+        /// TODO: Think about whether this makes sense here? Probably just getting the ConfigOverrideConditions is enough
+        [HelperState.shared updateBaseValuesWithEvent:event];
         
         /// Update application Overrides
+        
         if ((NO)) { /// Unused in MMF 3
-            if (!ScrollUtility.mouseDidMove) {
-                [ScrollUtility updateFrontMostAppDidChange];
-                /// Only checking this if mouse didn't move, because of || in (mouseMoved || frontMostAppChanged). For optimization. Not sure if significant.
-            }
             
-            if (ScrollUtility.mouseDidMove || ScrollUtility.frontMostAppDidChange) {
-                
-                /// Set app overrides
-                DDLogDebug(@"Scroll.m: Frontmost app did change. Reloading config overrides.");
-                BOOL didChange = [Config.shared loadOverridesForAppUnderMousePointerWithEvent:event];
-                if (didChange) {
-                    DDLogDebug(@"Scroll.m: Config did change. Resetting state.");
-                    resetState_Unsafe();
-                }
-            }
+//            [ScrollUtility updateMouseDidMoveWithEvent:event];
+//            if (!ScrollUtility.mouseDidMove) {
+//                [ScrollUtility updateFrontMostAppDidChange];
+//                /// Only checking this if mouse didn't move, because of || in (mouseMoved || frontMostAppChanged). For optimization. Not sure if significant.
+//            }
+//            
+//            if (ScrollUtility.mouseDidMove || ScrollUtility.frontMostAppDidChange) {
+//                
+//                /// Set app overrides
+//                DDLogDebug(@"Frontmost app did change. Reloading config overrides.");
+//                BOOL didChange = [Config.shared loadOverridesForAppUnderMousePointerWithEvent:event];
+//                if (didChange) {
+//                    DDLogDebug(@"Config did change. Resetting state.");
+//                    resetState_Unsafe();
+//                }
+//            }
         }
         
         /// Notify other touch drivers
@@ -376,8 +368,9 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         }
         
         /// Get display  under mouse pointer
-        CGDirectDisplayID displayID;
-        [HelperUtility displayUnderMousePointer:&displayID withEvent:event];
+        /// TODO: Probably remove this in favor of ConfigOverrideConditions
+        [HelperState.shared updateBaseValuesWithEvent:event]; /// Haven't thought about whether this makes any sens to call here
+        CGDirectDisplayID displayID = [HelperState.shared displayUnderMousePointer];
         
         /// Get scrollConfig
         _scrollConfig = [ScrollConfig scrollConfigWithModifiers:newMods inputAxis:inputAxis display:displayID];
@@ -391,7 +384,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     scrollDirection = [ScrollUtility directionForInputAxis:inputAxis inputDelta:scrollDelta invertSetting:_scrollConfig.u_invertDirection horizontalModifier:(_modifications.effectMod == kMFScrollEffectModificationHorizontalScroll)]; /// Why do we need to get the scrollDirection again? We already calculated it during the "preliminary scrollAnalysis". Can it ever change betweent he 2 times we calculate it?
     
     /// Run full scrollAnalysis
-    ScrollAnalysisResult scrollAnalysisResult = [ScrollAnalyzer updateWithTickOccuringAt:tickTS direction:scrollDirection config:_scrollConfig];
+    ScrollAnalysisResult scrollAnalysisResult = [ScrollAnalyzer updateWithTickOccuringAt:tickTime direction:scrollDirection config:_scrollConfig];
 
     
     /// Store scrollAnalysisResult
@@ -400,7 +393,8 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     _lastScrollAnalysisResultTimeStamp = CACurrentMediaTime();
     
     /// Debug
-    DDLogDebug(@"Scroll.m: ScrollAnalysisResult: %@", [ScrollAnalyzer scrollAnalysisResultDescription:scrollAnalysisResult]);
+    DDLogDebug(@"Scroll analysisResult: %@", [ScrollAnalyzer scrollAnalysisResultDescription:scrollAnalysisResult]);
+    
     
     /// Make scrollDelta positive, now that we have scrollDirection stored
     scrollDelta = llabs(scrollDelta);
@@ -425,26 +419,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         
     } else {
         
-        /// Get tickInterval
+        /// Get scroll speed
         double timeBetweenTicks = scrollAnalysisResult.timeBetweenTicks;
+        timeBetweenTicks = CLIP(timeBetweenTicks, 0, _scrollConfig.consecutiveScrollTickIntervalMax);
+        /// ^ Shouldn't we clip between consecutiveScrollTickIntervalMin (instead of 0) and consecutiveScrollTickIntervalMax?
+        ///     Also I think scrollAnalyzer should only produce these values and we should put an assert here instead
         
-        /// Validate tickInterval
-        assert(timeBetweenTicks == DBL_MAX
-               || ISBETWEEN(timeBetweenTicks, _scrollConfig.consecutiveScrollTickIntervalMin, _scrollConfig.consecutiveScrollTickIntervalMax));
-        
-        /// Handle tickInterval = `DBL_MAX`
-        ///     `DBL_MAX` is a special flag used by scrollAnalyzer to indicate that it has been more than `consecutiveScrollTickIntervalMax` since the last tick, and therefore the last two ticks were not consecutive. Kinda weird.
-        if (timeBetweenTicks == DBL_MAX) {
-            timeBetweenTicks = _scrollConfig.consecutiveScrollTickIntervalMax;
-        }
-        
-        /// Clip tickInterval
-        /// Notes:
-        /// - The `_scrollConfig.accelerationCurve` also uses `consecutiveScrollTickInterval_AccelerationEnd` in iits definition, but it linearly interpolates the acceleration for lower `timeBetweenTicks`. To cap the acceleration we use CLIPLOW() here.
-        /// - I'm not totally sure if this is optimal for the UX, also code is a bit messy.
-        timeBetweenTicks = CLIPLOW(timeBetweenTicks, _scrollConfig.consecutiveScrollTickInterval_AccelerationEnd);
-        
-        /// Get speed
         double scrollSpeed = 1/timeBetweenTicks; /// In tick/s
 
         /// Evaluate acceleration curve
@@ -454,11 +434,11 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         pxToScrollForThisTick = pxForThisTickDouble; /// We could use a SubPixelator balance out the rounding errors, but I don't think that'll be noticable
         
         /// Debug
-        DDLogDebug(@"Scroll.m: Acceleration curve f(%f) = %lld", scrollSpeed, pxToScrollForThisTick);
+        DDLogDebug(@"Acceleration curve f(%f) = %lld", scrollSpeed, pxToScrollForThisTick);
         
         /// Validate
         if (pxToScrollForThisTick <= 0) {
-            DDLogError(@"Scroll.m: pxForThisTick is smaller equal 0. This is invalid. Exiting. scrollSpeed: %f, pxForThisTick: %lld", scrollSpeed, pxToScrollForThisTick);
+            DDLogError(@"pxForThisTick is smaller equal 0. This is invalid. Exiting. scrollSpeed: %f, pxForThisTick: %lld", scrollSpeed, pxToScrollForThisTick);
             assert(false);
         }
         
@@ -484,23 +464,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             pxToScrollForThisTick *= fastScrollFactor;
         }
         
-        ///
-        /// Make direction change stop scroll animation
-        ///
-        /// Notes:
-        /// - We implemented this here without much consideration to play around with it. I haven't really thought about the control flow and stuff - maybe it's not super clean to just return here? Maybe we should set pxToScrollForThisTick to zero? Idk. But I've been using it for a while and it works well.
-        /// - We used to have a threshold for the currentAnimationSpeed of 200 to actually cancel the animator, but it seems to feel nicer to just set the threshold to 0. At this point it might be simpler or more efficient to not use the `currentAnimationSpeed` here or use something else instead. Buttt the performance impact reallyyy shouldn't be significant and it works fine so it's whatever.
-        
-        double currentAnimationSpeed = magnitudeOfVector(_animator.getLastAnimationSpeed);
-        if (_lastScrollAnalysisResult.scrollDirectionDidChange && currentAnimationSpeed > 0) {
-            DDLogDebug(@"Scroll.m: Direction change – cancel scroll.");
-            [_animator cancel];
-            return;
-        }
         
         /// Debug
-        DDLogDebug(@"Scroll.m: consecTicks: %lld, consecSwipes: %lld, consecSwipesFree: %f", scrollAnalysisResult.consecutiveScrollTickCounter, scrollAnalysisResult.DEBUG_consecutiveScrollSwipeCounterRaw, scrollAnalysisResult.consecutiveScrollSwipeCounter);
-        DDLogDebug(@"Scroll.m: timeBetweenTicks: %f, timeBetweenTicksRaw: %f, diff: %f, ticks: %lld", scrollAnalysisResult.timeBetweenTicks, scrollAnalysisResult.DEBUG_timeBetweenTicksRaw, scrollAnalysisResult.timeBetweenTicks - scrollAnalysisResult.DEBUG_timeBetweenTicksRaw, scrollAnalysisResult.consecutiveScrollTickCounter);
+        
+        DDLogDebug(@"consecTicks: %lld, consecSwipes: %lld, consecSwipesFree: %f", scrollAnalysisResult.consecutiveScrollTickCounter, scrollAnalysisResult.DEBUG_consecutiveScrollSwipeCounterRaw, scrollAnalysisResult.consecutiveScrollSwipeCounter);
+        
+        DDLogDebug(@"timeBetweenTicks: %f, timeBetweenTicksRaw: %f, diff: %f, ticks: %lld", scrollAnalysisResult.timeBetweenTicks, scrollAnalysisResult.DEBUG_timeBetweenTicksRaw, scrollAnalysisResult.timeBetweenTicks - scrollAnalysisResult.DEBUG_timeBetweenTicksRaw, scrollAnalysisResult.consecutiveScrollTickCounter);
     }
     
     ///
@@ -509,11 +478,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     
     if (pxToScrollForThisTick == 0) {
         
-        DDLogWarn(@"Scroll.m: pxToScrollForThisTick is 0");
+        DDLogWarn(@"pxToScrollForThisTick is 0");
         
     } else if (!_scrollConfig.smoothEnabled) {
         
         /// Send scroll event directly - without the animator. Will scroll all of pxToScrollForThisTick at once.
+        
         sendScroll(pxToScrollForThisTick, scrollDirection, NO, kMFAnimationCallbackPhaseNone, kMFMomentumHintNone, _scrollConfig);
         
     } else {
@@ -526,6 +496,10 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
 //        ScrollConfig *configCopyForBlock = [_scrollConfig copy];
         ScrollConfig *configCopyForBlock = _scrollConfig;
         
+        /// Retain event
+        ///     So we can use it for `displayUnderMousePointerWithEvent` inside the `_animator` start callback.
+        CFRetain(event);
+        
         /// Start animation
         
         [_animator startWithParams:^NSDictionary<NSString *,id> * _Nonnull(Vector valueLeftVec, BOOL isRunning, Curve *animationCurve, Vector currentSpeed) {
@@ -534,14 +508,18 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             assert(valueLeftVec.x == 0 || valueLeftVec.y == 0);
             
             /// Link to main screen
-            ///     - This used to be above in the `isFirstConsecutive` section. Maybe it fits better there?
-            ///     - (Sep 2024) This code was dead in MMF 3.0.0 - 3.0.2. It was re-activated in 3.0.3 by adding `[ScrollUtility updateMouseDidMoveWithEvent:]` in Scroll.m which was commented out. I really hope this doesn't lead to any new race-conditions / crashes. I tested it superficially, and I tried to think it through and didn't find issues, also people who used the 3.0.2-vcoba-2 build didn't seem to experience crashes, and that build had this change. That makes me relatively confident.
-            ///     - (Sep 2024) There's a race condition on `ScrollUtility.mouseDidMove`, since `startWithParams:` dispatches async to another queue than the queue where .mouseDidMove is updated. (The heavyProcessing queue.)
-            ///                         However, this should not lead to grave problems. Worst case, the `[_animator linkToMainScreen_Unsafe]` is not called even though the mouse moved, or it might be called several times in a row, even though the mouse didn't actually move in between.
-            if (ScrollUtility.mouseDidMove && !isRunning) {
+            ///     This used to be above in the `isFirstConsecutive` section. Maybe it fits better there?
+            ///     Notes: We removed the mouseDidMove check because those optimizations are planned to be moved inside HelperState and animator
+            if (/*ScrollUtility.mouseDidMove &&*/ !isRunning) {
                 /// Update animator to currently used display
-                [_animator linkToMainScreen_Unsafe];
+                [HelperState.shared updateBaseValuesWithEvent:event]; /// Haven't thought about whether it makes any sense to call this here
+                CGDirectDisplayID dsp = [HelperState.shared displayUnderMousePointer]; /// TODO: Can probably use the display from ConfigOverrideConditions? Might be more efficient? - If we do this, we don't need to retain the event before the `_animator` start callback.
+                [_animator linkToDisplay_Unsafe:dsp];
             }
+            
+            /// Release event
+            ///     It had been retained to use it in the `_animator` start callback
+            CFRelease(event);
             
             /// Declare result dict (animator start params)
             NSMutableDictionary *p = [NSMutableDictionary dictionary];
@@ -574,133 +552,58 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                 pxLeftToScroll = 0.0;
                 [_animator resetSubPixelator_Unsafe]; /// Maybe it would make more sense to do this automatically inside the animator? That might lead to problems with click and drag smoothing.
                 /// Validate
-                //                assert(isZeroVector(currentSpeed));
+//                assert(isZeroVector(currentSpeed));
             }
             
             /// Debug
-            DDLogDebug(@"Scroll.m: animation init - current speed: (%f, %f)", currentSpeed.x, currentSpeed.y);
+            DDLogDebug(@"Scroll.m start - current speed: (%f, %f)", currentSpeed.x, currentSpeed.y);
             
             /// Calculate distance to scroll
             double delta = pxToScrollForThisTick + pxLeftToScroll;
+            double duration;
             
-            /// Get curve params
+            /// Create curve
             MFScrollAnimationCurveParameters *pCurve = _scrollConfig.animationCurveParams;
             
-            /// Get baseDuration
+            /// Calculate baseDuration
+            /// Note: The idea is to speed up animations as the user scrolls the wheel faster.
+            
+            double baseMin = pCurve.baseMsPerStepMin;
+            double baseMax = pCurve.baseMsPerStep;
+            double tickMin = _scrollConfig.consecutiveScrollTickIntervalMin*1000;
+            double tickMax = _scrollConfig.consecutiveScrollTickIntervalMax*1000;
+            double tick = scrollAnalysisResult.timeBetweenTicks*1000;
+            
+            double tickScaleMax = MIN(tickMax, baseMax); /// Not sure if the `tickScaleMax` should just be `tickMax`
             
             double baseDuration;
-            
-            if (pCurve.baseMsPerStep != -1) {
-                
-                baseDuration = (double)pCurve.baseMsPerStep/1000.0;
-                
+            if (tick >= tickScaleMax || baseMin == -1) {
+                baseDuration = (double)baseMax/1000.0;
             } else {
+                /// Note: Should we use `consecutiveScrollTickIntervalMax` instead of `baseMs` here?
+                double b = [Math scaleWithValue:tick
+                                           from:[[Interval alloc] initWithStart:tickScaleMax end:tickMin]
+                                             to:[[Interval alloc] initWithStart:baseMax end:baseMin]
+                               allowOutOfBounds:NO];
                 
-                /// Use curve for baseDuration instead of constant
-                /// Notes:
-                /// - The idea is to speed up animations as the user scrolls the wheel faster.
-                /// - This is currently used for the `Smoothness: Regular` setting.
-                
-                /// Gather info
-                
-                Curve *baseTimeCurve    = pCurve.baseMsPerStepCurve;
-                double baseTimeStart    = [baseTimeCurve evaluateAt:0.0]; /// The non-sped-up/maximum duration for the baseCurve
-                double baseTimeEnd      = [baseTimeCurve evaluateAt:1.0];
-                double tickStart        = _scrollConfig.consecutiveScrollTickIntervalMax;
-                double tickEnd          = _scrollConfig.consecutiveScrollTickIntervalMin;
-                double tick             = scrollAnalysisResult.timeBetweenTicks;
-                
-                /// Adjust tickStart
-                /// Explanation:
-                /// - This is quite confusing. I think behind this design is the idea that the baseCurve is the part of the animation that feels like the user is directly pushing the page. (Whereas the rest of the curve feels more like the page keeps sliding after the user pushed it). This code is an approximation of the idea that only when the duration between the physical ticks of the users scrollwheel become shorter than the duration of this baseAnimation, should we start to speed up the baseAnimation. And that increases this physical relationship between the duration of the baseAnimation and the time between scrollwheel ticks. The extreme of this idea would be to try and make the duration of the base animation exactly equal to the time between scrollwheel ticks. But I think I tried that and it felt shitty (Not totally sure at the moment)
-                /// - Overall this is quite confusing and complex to understand. Maybe we should remove it.
-                /// - Update: This is also pretty much never used atm I think.
-                
-                if (tickStart > baseTimeStart) {
-                    
-                    tickStart = baseTimeStart;
-                    DDLogDebug(@"Scroll.m: animation init - baseMsPerStepCurve - adjusting tickStart below consecutiveScrollTickIntervalMax to baseTimeStart: %f", baseTimeStart);
-                    assert(false);
-                }
-                
-                /// Adjust tick
-                /// Notes:
-                /// - Scroll analyzer sets tick to `DBL_MAX` to signify that there are no previous consecutive ticks. (Not sure if  that's a great idea) We have to set it to a sendible value here so the scaling Math doesn't break.
-                
-                if (tick == DBL_MAX) {
-                    tick = _scrollConfig.consecutiveScrollTickIntervalMax;
-                }
-                
-                /// TESTING
-//                tick = _scrollConfig.consecutiveScrollTickIntervalMax + 1.0;
-                
-                /// Ensure that `tick <= max`
-                ///
-                /// Notes:
-                /// - Asserting this apparently caused the crash in 3.0.2 from https://github.com/noah-nuebling/mac-mouse-fix/issues/988
-                /// - To address this we turned off asserts in release builds by adding the NDEBUG preprocessor macro. For release builds, we're trying to recover by capping `tick` to `max` here, to smoothly recover if this bug happens.
-                ///
-                /// Discussion:
-                /// - I looked at the code inside ScrollAnalyzer.m which generates the `tick` values and and I couldn't find a reason why `tick` would ever exceed `max` (aka `_scrollConfig.consecutiveScrollTickIntervalMax`).
-                /// - The only idea I have for how this might happen is if the `max` changes between now and when the `scrollAnalysisResult` was calculated? The max *can* change, when quickScroll mod is activated. But since the `_scrollConfig` should only ever change on the first consecutiveTick and then the scrollAnalysis is made based on the new `_scrollConfig`... I still don't understand how it could lead to tick being `>` max here. So I'm not sure this is it.
-                /// - The issue also apparently went away with the 3.0.2-v-coba which returned to the classic animator scheduling. No idea how that could play a role. This animation-init-code right here is run on the animator queue, so it might be indirectly affected by the animation-callback-scheduling changes between the different vcoba builds. But I don't understand how it could lead to this crash. Maybe have to think about it more.
-                /// - One other idea is that the lower framerates in 3.0.2 could have indirectly caused problems somehowww, but one user also said the crashes didn't coincide with their computer being slow, so idk. (In this GH comment: https://github.com/noah-nuebling/mac-mouse-fix/issues/988#issuecomment-2187647181)
-                /// - One possibility to consider is that we symbolicated the crashlog wrong? But I'm very confident we didn't.
-                ///     - We used this command to symbolicate: `atos -arch arm64 -o ~/Downloads/dSYMs/Mac\ Mouse\ Fix\ Helper.app.dSYM/Contents/Resources/DWARF/Mac\ Mouse\ Fix\ Helper -l 0x100c3c000 0x100c4e44c` where the MMF Binary Image Address is the first and the Stacktrace Address is the second of the two hex numbers at the end. (you can get both of those from the crash report) The result is `__heavyProcessing_block_invoke (in Mac Mouse Fix Helper) (Scroll.m:621)`, and `Scroll.m:621` is the exactly location of an assert statement in the 3.0.2 source code (This assert probably caused the crash). If I put in any other hex numbers from the crash report I get gibberish. I'm pretty sure the symbolication is correct.
-                ///     - In [this mail](message:<5F9539CA-3097-4E29-B83E-4B91784AD3AB@platten.me>) by Jack Platten, he also attached a crashlog and it also points to `Scroll.m:621` even though the hex numbers are totally differnt. So I'm very certain now that the symbolication is correct.
-                ///
-                /// Also see:
-                /// - For further discussion, see the "Ensure that `tick <= max`" section inside `ScrollAnalyzer.m`
-                
-                if (tick > _scrollConfig.consecutiveScrollTickIntervalMax && tick != DBL_MAX) {
-                    DDLogError(@"Scroll.m: animation init - tickTime is over max. This is a bug but we can recover. tickTime: %f", tick);
-                    tick = _scrollConfig.consecutiveScrollTickIntervalMax;
-                    assert(false);
-                };
-                
-                /// Scale timeBetweenTicks to unit
-                double unitTick = [Math scaleWithValue:tick
-                                                  from:[[Interval alloc] initWithStart:tickStart end:tickEnd]
-                                                    to:Interval.unitInterval
-                                      allowOutOfBounds:YES];
-                unitTick = CLIP(unitTick, 0.0, 1.0);
-                
-                /// Sample curve
-                double b = [baseTimeCurve evaluateAt:unitTick];
                 baseDuration = (double)b/1000.0;
-                
-                /// Debug
-                DDLogDebug(@"Scroll.m: animation init - baseMsPerStepCurve - calculating animation baseDuration - baseTimeEnd: %.1f, baseBaseTimeStart: %.1f, tick: %.1f, tickEnd: %.1f, tickStart: %1.f, consecutiveScrollTickIntervalMax: %.1f, result: %.1f", baseTimeEnd, baseTimeStart, tick*1000, tickEnd*1000, tickStart*1000, _scrollConfig.consecutiveScrollTickIntervalMax*1000, baseDuration*1000);
             }
+            /// Debug
+            DDLogDebug(@"Scroll.m calculating animation baseDuration - base: %f, baseMin: %f, tick: %f, tickMin: %f, tickMax: %f, result: %f", baseMax, baseMin, tick, tickMin, tickMax, baseDuration*1000);
             
-            /// Get curve and duration
-            
-            double duration;
             Curve *c;
-            
-            if (!pCurve.useDragCurve) {
+            if (pCurve.useDragCurve) {
                 
-                DDLogDebug(@"Scroll.m: animation init – animation curve base");
-                
-                c = pCurve.baseCurve;
-                duration = baseDuration;
-                
-            } else {
-                
-                DDLogDebug(@"Scroll.m: animation init – animation curve hybrid");
-                
-                /// speedSmoothing
+                DDLogDebug(@"Scroll.m start animation curve hybrid");
                 
                 Bezier *baseCurve = pCurve.baseCurve;
                 double speedSmoothing = pCurve.speedSmoothing;
+
                 if (baseCurve == nil) {
                     
-                    /// Create baseCurve as speedSmoothing curve.
-                    /// Notes: 
-                    /// - The idea is to make the initial speed of the baseCurve equal to the current speed. The speedSmoothing amount determines how long the curve will take to move away from the current speed.
-                    /// - Currently using 0.01 epsilon for Bezier curve. This gives a little different results than even lower epsilons in MOS scroll analyzer. But it's not really noticable otherwise. Maybe we should do more extensive testing what the optimal epsilon is here when it comes to performance vs smoothness.
+                    /// Create baseCurve as speedSmoothing curve. The idea is to make the initial speed of the baseCurve equal to the current speed. The speedSmoothing amount determines how long the curve will take to move away from the current speed.
+                    /// Notes: Currently using 0.01 epsilon for Bezier curve. This gives a little different results than even lower epsilons in MOS scroll analyzer. But it's not really noticable otherwise. Maybe we should do more extensive testing what the optimal epsilon is here when it comes to performance vs smoothness.
                     
-                    /// Validate
                     assert(0.0 <= speedSmoothing && speedSmoothing <= 1.0);
                     
                     Vector baseCurveStartDirection = {
@@ -708,12 +611,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                         .x = 1                                  / ((double)baseDuration/1000.0),
                     };
                     Vector baseCurveP1 = vectorFromDeltaAndDirectionVector(speedSmoothing, baseCurveStartDirection);
-                    baseCurve = [[Bezier alloc] initWithControlPoints:@[@[@0, @0], @[@(baseCurveP1.x), @(baseCurveP1.y)], /*@[@1, @1],*/ @[@1, @1]] defaultEpsilon:0.01];
+                    baseCurve = [[Bezier alloc] initWithControlPointsAsArrays:@[@[@0, @0], @[@(baseCurveP1.x), @(baseCurveP1.y)], /*@[@1, @1],*/ @[@1, @1]] defaultEpsilon:0.01];
                     
-                    DDLogDebug(@"Scroll.m: animation init - start speed smoothing p1 - currentSpeed: %@, bezier: %@", vectorDescription(unitVector(baseCurveP1)), [baseCurve stringTraceWithStartX:0 endX:1 nOfSamples:10 bias:1]);
+                    DDLogDebug(@"Scroll.m start speed smoothing p1 - currentSpeed: %@, bezier: %@", vectorDescription(unitVector(baseCurveP1)), [baseCurve stringTraceWithStartX:0 endX:1 nOfSamples:10 bias:1]);
                 }
                 
-                /// Create hybrid curve
+                
                 HybridCurve *hc = [[BezierHybridCurve alloc]
                      initWithBaseCurve:baseCurve
                      minDuration:baseDuration
@@ -723,32 +626,33 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                      stopSpeed:pCurve.stopSpeed
                      distanceEpsilon:0.2];
                 
-                /// Get duration
                 duration = hc.duration;
                 
                 /// Validate
                 assert(fabs(hc.distance - delta) < 3);
-                
                 /// Debug
-                DDLogDebug(@"Scroll.m: animation init - Created hybrid curve with distance %f, duration: %f", hc.distance, hc.duration);
+                DDLogDebug(@"pre-animator - distance %f, duration: %f", hc.distance, hc.duration);
+    //            DDLogDebug(@"\nDuration pre-animator: %f base: %f", c.duration, c.baseDuration);
                 
                 /// Assign
                 c = hc;
+                
+            } else {
+                DDLogDebug(@"Scroll.m start animation curve base");
+                c = pCurve.baseCurve;
+                duration = baseDuration;
             }
             
             
             /// Fill return dict
+            
             p[@"duration"] = @(duration);
             p[@"vector"] = nsValueFromVector(vectorFromDeltaAndDirection(delta, scrollDirection));
             p[@"curve"] = c;
             
-            /// Debug
-            DDLogDebug(@"Scroll.m: animation init - Returning value: %@", p);
-            if ((0)) {
-                static double scrollDeltaSum = 0;
-                scrollDeltaSum += labs(pxToScrollForThisTick);
-                DDLogDebug(@"Scroll.m: Delta sum animation init: %f", scrollDeltaSum);
-            }
+            static double scrollDeltaSum = 0;
+            scrollDeltaSum += labs(pxToScrollForThisTick);
+//            DDLogDebug(@"Delta sum pre-animator: %f", scrollDeltaSum);
             
             /// Return
             return p;
@@ -756,9 +660,6 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         } integerCallback:^(Vector distanceDeltaVec, MFAnimationCallbackPhase animationPhase, MFMomentumHint momentumHint) {
             
             /// This will be called each frame
-            
-            /// Debug
-            DDLogDebug(@"Scroll.m: in-animator with vec: %@, phase: %d, momentum: %d", vectorDescription(distanceDeltaVec), animationPhase, momentumHint);
             
             /// Extract 1d delta from vec
             double distanceDelta = magnitudeOfVector(distanceDeltaVec);
@@ -779,20 +680,20 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                 assert(animationPhase == kMFAnimationCallbackPhaseEnd || animationPhase == kMFAnimationCallbackPhaseCanceled);
             }
             /// Debug
-            if ((0)) {
-                static double scrollDeltaSummm = 0;
-                scrollDeltaSummm += distanceDelta;
-                DDLogDebug(@"Scroll.m: in-animator - delta sum: %f", scrollDeltaSummm);
-                DDLogDebug(@"Scroll.m: in-animator - delta %f, animationPhase: %d, momentumHint: %d", distanceDelta, animationPhase, momentumHint);
+            static double scrollDeltaSummm = 0;
+            scrollDeltaSummm += distanceDelta;
+//            DDLogDebug(@"Delta sum in-animator: %f", scrollDeltaSummm);
+//            DDLogDebug(@"in-animator - delta %f, animationPhase: %d, momentumHint: %d", distanceDelta, animationPhase, momentumHint);
+            if (animationPhase == kMFAnimationCallbackPhaseStart) {
+                DDLogDebug(@"Start in-animator");
             }
             
             /// Send scroll
             sendScroll(distanceDelta, scrollDirection, YES, animationPhase, momentumHint, config);
             
         }];
+        
     }
-    
-    CFRelease(event);
 }
 
 #pragma mark - Send Scroll events
@@ -867,12 +768,23 @@ typedef enum {
 static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputType, MFAnimationCallbackPhase animatorPhase, MFMomentumHint momentumHint, ScrollConfig *config) {
     
     /// Init eventPhase
+    
     IOHIDEventPhaseBits eventPhase = kIOHIDEventPhaseUndefined;
     if (animatorPhase != kMFAnimationCallbackPhaseNone) {
         eventPhase = [TouchAnimator IOHIDPhaseWithAnimationCallbackPhase:animatorPhase];
     }
     
     /// Debug
+    if (animatorPhase == kMFAnimationCallbackPhaseCanceled) {
+        
+    }
+    
+    /// Validate
+    
+    if (dx+dy == 0) {
+        assert(eventPhase == kIOHIDEventPhaseEnded || eventPhase == kIOHIDEventPhaseCancelled);
+    }
+    
     if (runningPreRelease()) {
         
         static CFTimeInterval lastTs = 0.0;
@@ -880,13 +792,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
         CFTimeInterval tsDiff = ts - lastTs;
         lastTs = ts;
         
-        DDLogDebug(@"Scroll.m: \nHNGG: Posting event from scrollwheel: dx: %lld, dy: %lld, outputType: %d, phase: %d, momentum: %d, time: %d", dx, dy, outputType, animatorPhase, momentumHint, (int)(tsDiff*1000));
-    }
-    
-    /// Validate
-    
-    if (dx+dy == 0) {
-        assert(eventPhase == kIOHIDEventPhaseEnded || eventPhase == kIOHIDEventPhaseCancelled);
+        DDLogDebug(@"\nHNGG: Posting event from scrollwheel: dx: %lld, dy: %lld, type: %d, phase: %d, momentum: %d, time: %d", dx, dy, outputType, animatorPhase, momentumHint, (int)(tsDiff*1000));
     }
     
     /// Send events based on outputType
@@ -908,7 +814,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
                 [GestureScrollSimulator postGestureScrollEventWithDeltaX:0.0 deltaY:0.0 phase:kIOHIDEventPhaseEnded autoMomentumScroll:YES invertedFromDevice:_scrollConfig.invertedFromDevice];
                 
                 /// Debug
-                DDLogDebug(@"Scroll.m: THAT CALL where displayLinkkk is stopped from Scroll.m");
+                DDLogDebug(@"THAT CALL where displayLinkkk is stopped from Scroll.m");
                 
                 /// Suppress momentumScroll
                 /// - Only works if autoMomentumScroll is set to YES
@@ -938,14 +844,14 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
                     eventPhase = kIOHIDEventPhaseBegan;
                     
                     /// Debug
-                    DDLogDebug(@"Scroll.m: \nHybrid event - momentum: (0, 0, %d) JJJ", kCGMomentumScrollPhaseEnd);
+                    DDLogDebug(@"\nHybrid event - momentum: (0, 0, %d) JJJ", kCGMomentumScrollPhaseEnd);
                 }
                 
                 /// Send normal gesture scroll
                 [GestureScrollSimulator postGestureScrollEventWithDeltaX:dx deltaY:dy phase:eventPhase autoMomentumScroll:NO invertedFromDevice:_scrollConfig.invertedFromDevice];
                 
                 /// Debug
-                DDLogDebug(@"Scroll.m: \nHybrid event - gesture: (%lld, %lld, %d)", dx, dy, eventPhase);
+                DDLogDebug(@"\nHybrid event - gesture: (%lld, %lld, %d)", dx, dy, eventPhase);
                 
             } else { /// momentumHint is momentum
                 
@@ -961,7 +867,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
                     momentumPhase = kCGMomentumScrollPhaseBegin;
                     
                     /// Debug
-                    DDLogDebug(@"Scroll.m: \nHybrid event - gesture: (0, 0, %d) HHH", kIOHIDEventPhaseEnded);
+                    DDLogDebug(@"\nHybrid event - gesture: (0, 0, %d) HHH", kIOHIDEventPhaseEnded);
                     
                 } else if (lastMomentumHint == kMFMomentumHintMomentum) {
                     /// Momentum continues
@@ -973,7 +879,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
                         momentumPhase = kCGMomentumScrollPhaseEnd;
                     } else {
                         assert(false);
-                        DDLogDebug(@"Scroll.m: \nHybrid event - Assert fail >:(");
+                        DDLogDebug(@"\nHybrid event - Assert fail >:(");
                     }
                 } else {
                     assert(false);
@@ -983,13 +889,13 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
                 [GestureScrollSimulator postMomentumScrollDirectlyWithDeltaX:dx deltaY:dy momentumPhase:momentumPhase invertedFromDevice:_scrollConfig.invertedFromDevice];
                 
                 /// Debug
-                DDLogDebug(@"Scroll.m: \nHybrid event - momentum: (%lld, %lld, %d)", dx, dy, momentumPhase);
+                DDLogDebug(@"\nHybrid event - momentum: (%lld, %lld, %d)", dx, dy, momentumPhase);
             }
             
             /// Update lastMomentumHint
             lastMomentumHint = momentumHint;
             if (animatorPhase == kMFAnimationCallbackPhaseEnd || animatorPhase == kMFAnimationCallbackPhaseCanceled) {
-                DDLogDebug(@"Scroll.m: HNGG reset lastMomentumHint");
+                DDLogDebug(@"HNGG reset lastMomentumHint");
                 lastMomentumHint = kMFMomentumHintNone;
             }
         }
@@ -1046,7 +952,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
             double ts = CACurrentMediaTime();
             double timeSinceStart = ts - tsStart;
             
-            DDLogDebug(@"Scroll.m: \nHNGG: Posting continuousScroll event: %@, momentumHint: %d, time: %d", scrollEventDescriptionWithOptions(event, YES, NO), momentumHint, (int)(timeSinceStart*1000));
+            DDLogDebug(@"\nHNGG: Posting continuous scroll event: %@, momentumHint: %d, time: %d", scrollEventDescriptionWithOptions(event, YES, NO), momentumHint, (int)(timeSinceStart*1000));
         }
         
         /// Post event
@@ -1102,7 +1008,7 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
         CGEventSetIntegerValueField(event, kCGScrollWheelEventFixedPtDeltaAxis2, dxLineFixed);
         
         /// Debug
-        DDLogDebug(@"Scroll.m: Posting lineScroll event – %@", CGScrollWheelEventDescription(event));
+        DDLogDebug(@"SCROOOL OVONT – %@", CGScrollWheelEventDescription(event));
         
         /// Send
         CGEventPost(kCGSessionEventTap, event);
@@ -1119,14 +1025,18 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
         /// HACK:
         ///     Chromium browsers need a ton of zooming deltas before they actually start zooming. So we send a bunch of deltas right away to make things more responsive.
         ///     Another way to combat this would be to only send the `end` event when the user releases the modifier.
+        
         if (eventPhase == kIOHIDEventPhaseBegan) {
             
-            NSString *bundleID = [HelperUtility appUnderMousePointerWithEvent:NULL].bundleIdentifier;
+            CGEventRef e = CGEventCreate(NULL);
+            [HelperState.shared updateBaseValuesWithEvent:e]; /// TODO: Think about this. Can probably remove.
+            NSString *bundleID = [HelperState.shared appUnderMousePointer].bundleIdentifier;
+            CFRelease(e);
             
             if (bundleID != nil) {
                 if ([bundleID containsString:@"com.google.Chrome"]
                     || [bundleID containsString:@"org.chromium.Chromium"]
-                    || [bundleID containsString:@"company.thebrowser.Browser"] /// Arc browser
+                    || [bundleID containsString:@"company.thebrowser.Browser"] /// Arc browser - this mechanism actually messes up zooming in the 'easels'. Those don't seem to be rendered with Chromium but natively.
                     || [bundleID containsString:@"com.operasoftware.Opera"]
                     || [bundleID containsString:@"com.microsoft.edgemac"]
                     || [bundleID containsString:@"com.vivaldi.Vivaldi"]
