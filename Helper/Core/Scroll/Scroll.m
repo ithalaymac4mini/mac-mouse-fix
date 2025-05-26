@@ -27,7 +27,6 @@
 #import "ScrollModifiers.h"
 #import "Actions.h"
 #import "EventUtility.h"
-#import "MathObjc.h"
 
 @import IOKit;
 #import "MFHIDEventImports.h"
@@ -234,14 +233,16 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     CFTimeInterval tickTime = CGEventGetTimestampInSeconds(event);
     
     /// Create copy of event
+    /// We do this, because the original event will become invalid and unusable in the new queue. Edit: Are we sure? Couldn't we just retain the event?
     
-    CGEventRef eventCopy = CGEventCreateCopy(event); /// Create a copy, because the original event will become invalid and unusable in the new queue.
+    CGEventRef eventCopy = CGEventCreateCopy(event);
     
     /// Enqueue heavy processing
     ///  Executing heavy stuff on a different thread to prevent the eventTap from timing out. We wrote this before knowing that you can just re-enable the eventTap when it times out. But this doesn't hurt.
     
     dispatch_async(_scrollQueue, ^{
         heavyProcessing(eventCopy, scrollDeltaAxis1, scrollDeltaAxis2, tickTime);
+        CFRelease(eventCopy);
     });
     
     return nil;
@@ -249,7 +250,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 
 #pragma mark - Main event processing
 
-static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t scrollDeltaAxis2, CFTimeInterval tickTS) {
+static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t scrollDeltaAxis2, CFTimeInterval tickTime) {
     
     /// Declare stuff for later
     static DriverUnsuspender unsuspendDrivers = ^{};
@@ -308,7 +309,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     
     MFDirection scrollDirection = [ScrollUtility directionForInputAxis:inputAxis inputDelta:scrollDelta invertSetting:_scrollConfig.u_invertDirection horizontalModifier:(_modifications.effectMod == kMFScrollEffectModificationHorizontalScroll)];
     
-    BOOL firstConsecutive = [ScrollAnalyzer peekIsFirstConsecutiveTickWithTickOccuringAt:tickTS direction:scrollDirection config:_scrollConfig];
+    BOOL firstConsecutive = [ScrollAnalyzer peekIsFirstConsecutiveTickWithTickOccuringAt:tickTime direction:scrollDirection config:_scrollConfig];
     
     ///
     /// Update stuff
@@ -324,29 +325,29 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         [TrialCounter.shared handleUse];
         
         /// Update active device
-        [HelperState.shared updateActiveDeviceWithEvent:event];
-        
-        /// Update mouse did move
-        ///     Note: We need this in MMF 3 to update the displayLink to the current display
-        [ScrollUtility updateMouseDidMoveWithEvent:event];
+        /// TODO: Think about whether this makes sense here? Probably just getting the ConfigOverrideConditions is enough
+        [HelperState.shared updateBaseValuesWithEvent:event];
         
         /// Update application Overrides
+        
         if ((NO)) { /// Unused in MMF 3
-            if (!ScrollUtility.mouseDidMove) {
-                [ScrollUtility updateFrontMostAppDidChange];
-                /// Only checking this if mouse didn't move, because of || in (mouseMoved || frontMostAppChanged). For optimization. Not sure if significant.
-            }
             
-            if (ScrollUtility.mouseDidMove || ScrollUtility.frontMostAppDidChange) {
-                
-                /// Set app overrides
-                DDLogDebug(@"Frontmost app did change. Reloading config overrides.");
-                BOOL didChange = [Config.shared loadOverridesForAppUnderMousePointerWithEvent:event];
-                if (didChange) {
-                    DDLogDebug(@"Config did change. Resetting state.");
-                    resetState_Unsafe();
-                }
-            }
+//            [ScrollUtility updateMouseDidMoveWithEvent:event];
+//            if (!ScrollUtility.mouseDidMove) {
+//                [ScrollUtility updateFrontMostAppDidChange];
+//                /// Only checking this if mouse didn't move, because of || in (mouseMoved || frontMostAppChanged). For optimization. Not sure if significant.
+//            }
+//            
+//            if (ScrollUtility.mouseDidMove || ScrollUtility.frontMostAppDidChange) {
+//                
+//                /// Set app overrides
+//                DDLogDebug(@"Frontmost app did change. Reloading config overrides.");
+//                BOOL didChange = [Config.shared loadOverridesForAppUnderMousePointerWithEvent:event];
+//                if (didChange) {
+//                    DDLogDebug(@"Config did change. Resetting state.");
+//                    resetState_Unsafe();
+//                }
+//            }
         }
         
         /// Notify other touch drivers
@@ -367,8 +368,9 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         }
         
         /// Get display  under mouse pointer
-        CGDirectDisplayID displayID;
-        [HelperUtility displayUnderMousePointer:&displayID withEvent:event];
+        /// TODO: Probably remove this in favor of ConfigOverrideConditions
+        [HelperState.shared updateBaseValuesWithEvent:event]; /// Haven't thought about whether this makes any sens to call here
+        CGDirectDisplayID displayID = [HelperState.shared displayUnderMousePointer];
         
         /// Get scrollConfig
         _scrollConfig = [ScrollConfig scrollConfigWithModifiers:newMods inputAxis:inputAxis display:displayID];
@@ -382,7 +384,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
     scrollDirection = [ScrollUtility directionForInputAxis:inputAxis inputDelta:scrollDelta invertSetting:_scrollConfig.u_invertDirection horizontalModifier:(_modifications.effectMod == kMFScrollEffectModificationHorizontalScroll)]; /// Why do we need to get the scrollDirection again? We already calculated it during the "preliminary scrollAnalysis". Can it ever change betweent he 2 times we calculate it?
     
     /// Run full scrollAnalysis
-    ScrollAnalysisResult scrollAnalysisResult = [ScrollAnalyzer updateWithTickOccuringAt:tickTS direction:scrollDirection config:_scrollConfig];
+    ScrollAnalysisResult scrollAnalysisResult = [ScrollAnalyzer updateWithTickOccuringAt:tickTime direction:scrollDirection config:_scrollConfig];
 
     
     /// Store scrollAnalysisResult
@@ -417,26 +419,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
         
     } else {
         
-        /// Get tickInterval
+        /// Get scroll speed
         double timeBetweenTicks = scrollAnalysisResult.timeBetweenTicks;
+        timeBetweenTicks = CLIP(timeBetweenTicks, 0, _scrollConfig.consecutiveScrollTickIntervalMax);
+        /// ^ Shouldn't we clip between consecutiveScrollTickIntervalMin (instead of 0) and consecutiveScrollTickIntervalMax?
+        ///     Also I think scrollAnalyzer should only produce these values and we should put an assert here instead
         
-        /// Validate tickInterval
-        assert(timeBetweenTicks == DBL_MAX
-               || ISBETWEEN(timeBetweenTicks, _scrollConfig.consecutiveScrollTickIntervalMin, _scrollConfig.consecutiveScrollTickIntervalMax));
-        
-        /// Handle tickInterval = `DBL_MAX`
-        ///     `DBL_MAX` is a special flag used by scrollAnalyzer to indicate that it has been more than `consecutiveScrollTickIntervalMax` since the last tick, and therefore the last two ticks were not consecutive. Kinda weird.
-        if (timeBetweenTicks == DBL_MAX) {
-            timeBetweenTicks = _scrollConfig.consecutiveScrollTickIntervalMax;
-        }
-        
-        /// Clip tickInterval
-        /// Notes:
-        /// - The `_scrollConfig.accelerationCurve` also uses `consecutiveScrollTickInterval_AccelerationEnd` in iits definition, but it linearly interpolates the acceleration for lower `timeBetweenTicks`. To cap the acceleration we use CLIPLOW() here.
-        /// - I'm not totally sure if this is optimal for the UX, also code is a bit messy.
-        timeBetweenTicks = CLIPLOW(timeBetweenTicks, _scrollConfig.consecutiveScrollTickInterval_AccelerationEnd);
-        
-        /// Get speed
         double scrollSpeed = 1/timeBetweenTicks; /// In tick/s
 
         /// Evaluate acceleration curve
@@ -476,18 +464,6 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             pxToScrollForThisTick *= fastScrollFactor;
         }
         
-        ///
-        /// Make direction change stop scroll animation
-        ///
-        /// Notes:
-        /// - We implemented this here without much consideration to play around with it. I haven't really thought about the control flow and stuff - maybe it's not super clean to just return here? Maybe we should set pxToScrollForThisTick to zero? Idk. But I've been using it for a while and it works well.
-        /// - We used to have a threshold for the currentAnimationSpeed of 200 to actually cancel the animator, but it seems to feel nicer to just set the threshold to 0. At this point it might be simpler or more efficient to not use the `currentAnimationSpeed` here or use something else instead. Buttt the performance impact reallyyy shouldn't be significant and it works fine so it's whatever.
-        
-        double currentAnimationSpeed = magnitudeOfVector(_animator.getLastAnimationSpeed);
-        if (_lastScrollAnalysisResult.scrollDirectionDidChange && currentAnimationSpeed > 0) {
-            [_animator cancel];
-            return;
-        }
         
         /// Debug
         
@@ -520,6 +496,10 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
 //        ScrollConfig *configCopyForBlock = [_scrollConfig copy];
         ScrollConfig *configCopyForBlock = _scrollConfig;
         
+        /// Retain event
+        ///     So we can use it for `displayUnderMousePointerWithEvent` inside the `_animator` start callback.
+        CFRetain(event);
+        
         /// Start animation
         
         [_animator startWithParams:^NSDictionary<NSString *,id> * _Nonnull(Vector valueLeftVec, BOOL isRunning, Curve *animationCurve, Vector currentSpeed) {
@@ -529,10 +509,17 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             
             /// Link to main screen
             ///     This used to be above in the `isFirstConsecutive` section. Maybe it fits better there?
-            if (ScrollUtility.mouseDidMove && !isRunning) {
+            ///     Notes: We removed the mouseDidMove check because those optimizations are planned to be moved inside HelperState and animator
+            if (/*ScrollUtility.mouseDidMove &&*/ !isRunning) {
                 /// Update animator to currently used display
-                [_animator linkToMainScreen_Unsafe];
+                [HelperState.shared updateBaseValuesWithEvent:event]; /// Haven't thought about whether it makes any sense to call this here
+                CGDirectDisplayID dsp = [HelperState.shared displayUnderMousePointer]; /// TODO: Can probably use the display from ConfigOverrideConditions? Might be more efficient? - If we do this, we don't need to retain the event before the `_animator` start callback.
+                [_animator linkToDisplay_Unsafe:dsp];
             }
+            
+            /// Release event
+            ///     It had been retained to use it in the `_animator` start callback
+            CFRelease(event);
             
             /// Declare result dict (animator start params)
             NSMutableDictionary *p = [NSMutableDictionary dictionary];
@@ -565,7 +552,7 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                 pxLeftToScroll = 0.0;
                 [_animator resetSubPixelator_Unsafe]; /// Maybe it would make more sense to do this automatically inside the animator? That might lead to problems with click and drag smoothing.
                 /// Validate
-                //                assert(isZeroVector(currentSpeed));
+//                assert(isZeroVector(currentSpeed));
             }
             
             /// Debug
@@ -573,97 +560,50 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             
             /// Calculate distance to scroll
             double delta = pxToScrollForThisTick + pxLeftToScroll;
+            double duration;
             
-            /// Get curve params
+            /// Create curve
             MFScrollAnimationCurveParameters *pCurve = _scrollConfig.animationCurveParams;
             
-            /// Get baseDuration
+            /// Calculate baseDuration
+            /// Note: The idea is to speed up animations as the user scrolls the wheel faster.
+            
+            double baseMin = pCurve.baseMsPerStepMin;
+            double baseMax = pCurve.baseMsPerStep;
+            double tickMin = _scrollConfig.consecutiveScrollTickIntervalMin*1000;
+            double tickMax = _scrollConfig.consecutiveScrollTickIntervalMax*1000;
+            double tick = scrollAnalysisResult.timeBetweenTicks*1000;
+            
+            double tickScaleMax = MIN(tickMax, baseMax); /// Not sure if the `tickScaleMax` should just be `tickMax`
             
             double baseDuration;
-            
-            if (pCurve.baseMsPerStep != -1) {
-                
-                baseDuration = (double)pCurve.baseMsPerStep/1000.0;
-                
+            if (tick >= tickScaleMax || baseMin == -1) {
+                baseDuration = (double)baseMax/1000.0;
             } else {
+                /// Note: Should we use `consecutiveScrollTickIntervalMax` instead of `baseMs` here?
+                double b = [Math scaleWithValue:tick
+                                           from:[[Interval alloc] initWithStart:tickScaleMax end:tickMin]
+                                             to:[[Interval alloc] initWithStart:baseMax end:baseMin]
+                               allowOutOfBounds:NO];
                 
-                /// Use curve for baseDuration instead of constant
-                /// Note: The idea is to speed up animations as the user scrolls the wheel faster.
-                
-                /// Gather info
-                
-                Curve *baseTimeCurve    = pCurve.baseMsPerStepCurve;
-                double baseTimeStart    = [baseTimeCurve evaluateAt:0.0]; /// The non-sped-up/maximum duration for the baseCurve
-                double baseTimeEnd      = [baseTimeCurve evaluateAt:1.0];
-                double tickStart        = _scrollConfig.consecutiveScrollTickIntervalMax;
-                double tickEnd          = _scrollConfig.consecutiveScrollTickIntervalMin;
-                double tick             = scrollAnalysisResult.timeBetweenTicks;
-                
-                /// Adjust tickStart
-                /// Explanation:
-                /// - This is quite confusing. I think behind this design is the idea that the baseCurve is the part of the animation that feels like the user is directly pushing the page. (Whereas the rest of the curve feels more like the page keeps sliding after the user pushed it). This code is an approximation of the idea that only when the duration between the physical ticks of the users scrollwheel become shorter than the duration of this baseAnimation, should we start to speed up the baseAnimation. And that increases this physical relationship between the duration of the baseAnimation and the time between scrollwheel ticks. The extreme of this idea would be to try and make the duration of the base animation exactly equal to the time between scrollwheel ticks. But I think I tried that and it felt shitty (Not totally sure at the moment)
-                /// - Overall this is quite confusing and complex to understand. Maybe we should remove it.
-                /// - Update: This is also pretty much never used atm I think.
-                
-                if (tickStart > baseTimeStart) {
-                    
-                    tickStart = baseTimeStart;
-                    DDLogDebug(@"Scroll.m - baseMsPerStepCurve - adjusting tickStart below consecutiveScrollTickIntervalMax to baseTimeStart: %f", baseTimeStart);
-                    assert(false);
-                }
-                
-                /// Adjust tick
-                /// Notes:
-                /// - Scroll analyzer sets tick to `DBL_MAX` to signify that there are no previous consecutive ticks. (Not sure if  that's a great idea) We have to set it to a sendible value here so the scaling Math doesn't break.
-                
-                if (tick == DBL_MAX) {
-                    tick = _scrollConfig.consecutiveScrollTickIntervalMax;
-                }
-                assert(tick <= _scrollConfig.consecutiveScrollTickIntervalMax);
-                
-                /// Scale timeBetweenTicks to unit
-                double unitTick = [Math scaleWithValue:tick
-                                                  from:[[Interval alloc] initWithStart:tickStart end:tickEnd]
-                                                    to:Interval.unitInterval
-                                      allowOutOfBounds:YES];
-                unitTick = CLIP(unitTick, 0.0, 1.0);
-                
-                /// Sample curve
-                double b = [baseTimeCurve evaluateAt:unitTick];
                 baseDuration = (double)b/1000.0;
-                
-                /// Debug
-                DDLogDebug(@"Scroll.m - baseMsPerStepCurve - calculating animation baseDuration - baseTimeEnd: %.1f, baseBaseTimeStart: %.1f, tick: %.1f, tickEnd: %.1f, tickStart: %1.f, consecutiveScrollTickIntervalMax: %.1f, result: %.1f", baseTimeEnd, baseTimeStart, tick*1000, tickEnd*1000, tickStart*1000, _scrollConfig.consecutiveScrollTickIntervalMax*1000, baseDuration*1000);
             }
+            /// Debug
+            DDLogDebug(@"Scroll.m calculating animation baseDuration - base: %f, baseMin: %f, tick: %f, tickMin: %f, tickMax: %f, result: %f", baseMax, baseMin, tick, tickMin, tickMax, baseDuration*1000);
             
-            /// Get curve and duration
-            
-            double duration;
             Curve *c;
-            
-            if (!pCurve.useDragCurve) {
-                
-                DDLogDebug(@"Scroll.m start animation curve base");
-                
-                c = pCurve.baseCurve;
-                duration = baseDuration;
-                
-            } else {
+            if (pCurve.useDragCurve) {
                 
                 DDLogDebug(@"Scroll.m start animation curve hybrid");
                 
-                /// speedSmoothing
-                
                 Bezier *baseCurve = pCurve.baseCurve;
                 double speedSmoothing = pCurve.speedSmoothing;
+
                 if (baseCurve == nil) {
                     
-                    /// Create baseCurve as speedSmoothing curve.
-                    /// Notes: 
-                    /// - The idea is to make the initial speed of the baseCurve equal to the current speed. The speedSmoothing amount determines how long the curve will take to move away from the current speed.
-                    /// - Currently using 0.01 epsilon for Bezier curve. This gives a little different results than even lower epsilons in MOS scroll analyzer. But it's not really noticable otherwise. Maybe we should do more extensive testing what the optimal epsilon is here when it comes to performance vs smoothness.
+                    /// Create baseCurve as speedSmoothing curve. The idea is to make the initial speed of the baseCurve equal to the current speed. The speedSmoothing amount determines how long the curve will take to move away from the current speed.
+                    /// Notes: Currently using 0.01 epsilon for Bezier curve. This gives a little different results than even lower epsilons in MOS scroll analyzer. But it's not really noticable otherwise. Maybe we should do more extensive testing what the optimal epsilon is here when it comes to performance vs smoothness.
                     
-                    /// Validate
                     assert(0.0 <= speedSmoothing && speedSmoothing <= 1.0);
                     
                     Vector baseCurveStartDirection = {
@@ -671,12 +611,12 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                         .x = 1                                  / ((double)baseDuration/1000.0),
                     };
                     Vector baseCurveP1 = vectorFromDeltaAndDirectionVector(speedSmoothing, baseCurveStartDirection);
-                    baseCurve = [[Bezier alloc] initWithControlPoints:@[@[@0, @0], @[@(baseCurveP1.x), @(baseCurveP1.y)], /*@[@1, @1],*/ @[@1, @1]] defaultEpsilon:0.01];
+                    baseCurve = [[Bezier alloc] initWithControlPointsAsArrays:@[@[@0, @0], @[@(baseCurveP1.x), @(baseCurveP1.y)], /*@[@1, @1],*/ @[@1, @1]] defaultEpsilon:0.01];
                     
-                    DDLogDebug(@"Scroll.m - start speed smoothing p1 - currentSpeed: %@, bezier: %@", vectorDescription(unitVector(baseCurveP1)), [baseCurve stringTraceWithStartX:0 endX:1 nOfSamples:10 bias:1]);
+                    DDLogDebug(@"Scroll.m start speed smoothing p1 - currentSpeed: %@, bezier: %@", vectorDescription(unitVector(baseCurveP1)), [baseCurve stringTraceWithStartX:0 endX:1 nOfSamples:10 bias:1]);
                 }
                 
-                /// Create hybrid curve
+                
                 HybridCurve *hc = [[BezierHybridCurve alloc]
                      initWithBaseCurve:baseCurve
                      minDuration:baseDuration
@@ -686,17 +626,21 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
                      stopSpeed:pCurve.stopSpeed
                      distanceEpsilon:0.2];
                 
-                /// Get duration
                 duration = hc.duration;
                 
                 /// Validate
                 assert(fabs(hc.distance - delta) < 3);
-                
                 /// Debug
-                DDLogDebug(@"Scroll.m pre-animator - distance %f, duration: %f", hc.distance, hc.duration);
+                DDLogDebug(@"pre-animator - distance %f, duration: %f", hc.distance, hc.duration);
+    //            DDLogDebug(@"\nDuration pre-animator: %f base: %f", c.duration, c.baseDuration);
                 
                 /// Assign
                 c = hc;
+                
+            } else {
+                DDLogDebug(@"Scroll.m start animation curve base");
+                c = pCurve.baseCurve;
+                duration = baseDuration;
             }
             
             
@@ -748,9 +692,8 @@ static void heavyProcessing(CGEventRef event, int64_t scrollDeltaAxis1, int64_t 
             sendScroll(distanceDelta, scrollDirection, YES, animationPhase, momentumHint, config);
             
         }];
+        
     }
-    
-    CFRelease(event);
 }
 
 #pragma mark - Send Scroll events
@@ -1082,14 +1025,18 @@ static void sendOutputEvents(int64_t dx, int64_t dy, MFScrollOutputType outputTy
         /// HACK:
         ///     Chromium browsers need a ton of zooming deltas before they actually start zooming. So we send a bunch of deltas right away to make things more responsive.
         ///     Another way to combat this would be to only send the `end` event when the user releases the modifier.
+        
         if (eventPhase == kIOHIDEventPhaseBegan) {
             
-            NSString *bundleID = [HelperUtility appUnderMousePointerWithEvent:NULL].bundleIdentifier;
+            CGEventRef e = CGEventCreate(NULL);
+            [HelperState.shared updateBaseValuesWithEvent:e]; /// TODO: Think about this. Can probably remove.
+            NSString *bundleID = [HelperState.shared appUnderMousePointer].bundleIdentifier;
+            CFRelease(e);
             
             if (bundleID != nil) {
                 if ([bundleID containsString:@"com.google.Chrome"]
                     || [bundleID containsString:@"org.chromium.Chromium"]
-                    || [bundleID containsString:@"company.thebrowser.Browser"] /// Arc browser
+                    || [bundleID containsString:@"company.thebrowser.Browser"] /// Arc browser - this mechanism actually messes up zooming in the 'easels'. Those don't seem to be rendered with Chromium but natively.
                     || [bundleID containsString:@"com.operasoftware.Opera"]
                     || [bundleID containsString:@"com.microsoft.edgemac"]
                     || [bundleID containsString:@"com.vivaldi.Vivaldi"]

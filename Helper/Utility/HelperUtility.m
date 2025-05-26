@@ -29,6 +29,8 @@
 + (CVReturn)display:(CGDirectDisplayID *)dspID atPoint:(CGPoint)point {
     /// Pass in a CGEvent to get pointer location from. Not sure if signification optimization
     
+    assert(false); /// Moved this to Swift implementation in HelperState.swift
+    
     /// Get display
     CGDirectDisplayID *newDisplaysUnderMousePointer = malloc(sizeof(CGDirectDisplayID));
     uint32_t matchingDisplayCount;
@@ -37,7 +39,7 @@
     
     if (matchingDisplayCount == 1) {
         
-        /// Get the the master display in case `_displaysUnderMousePointer[0]` is part of a mirror set
+        /// Get the the master display in case _displaysUnderMousePointer[0] is part of a mirror set
         CGDirectDisplayID d = CGDisplayPrimaryDisplay(newDisplaysUnderMousePointer[0]);
         
         /// Free
@@ -59,13 +61,14 @@
         
     } else {
         assert(false);
-        return kCVReturnError;
     }
 }
 
 #pragma mark - App under pointer
 
 + (NSRunningApplication * _Nullable)appUnderMousePointerWithEvent:(CGEventRef _Nullable)event {
+    
+    assert(false); /// Has been replaced with Swift implementation in HelperState.swift || Update: For optimization, we've now moved this back to ObjC and into Apps.m 
     
     ///
     /// Get PID under mouse pointer
@@ -107,31 +110,6 @@
     return appUnderMousePointer;
 }
 #pragma mark - Other
-
-NSString *runningApplicationDescription(NSRunningApplication *app) {
-    
-    /// `.debugDescription` is not very helpful
-    /// What we learn from this:
-    ///     - If the `NSRunningApplication` is a single executable instead of an actual app bundle (This is the case for Minecraft and many other games), then the `bundleID` is nil, but the `bundleURL` and the `executableURL` both point to the executable.
-    ///
-    return [NSString stringWithFormat:@"pid: %d, executable: %@, bundle: %@, bundleID: %@, exposedBindings: %@", app.processIdentifier, app.executableURL, app.bundleURL, app.bundleIdentifier, app.exposedBindings];
-}
-
-+ (void)openMainApp {
-    
-    NSURL *bundleURL = Locator.mainAppBundle.bundleURL;
-    [NSWorkspace.sharedWorkspace openURL:bundleURL];
-    
-    return;
-    
-    /// Old method from `AccessiblityCheck.m`
-    
-    NSArray<NSRunningApplication *> *apps = [NSRunningApplication runningApplicationsWithBundleIdentifier:kMFBundleIDApp];
-    
-    for (NSRunningApplication *app in apps) {
-        [app activateWithOptions:NSApplicationActivateIgnoringOtherApps];
-    }
-}
 
 + (void)printEventFieldDifferencesBetween:(CGEventRef)event1 and:(CGEventRef)event2 {
     DDLogInfo(@"Field differences for event: %@, and event: %@", event1, event2);

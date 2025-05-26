@@ -58,8 +58,8 @@
             filePath = "Shared/Math/Curves/Curve.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
             landmarkName = "traceAsPoints(startX:endX:nOfSamples:bias:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,8 +74,8 @@
             filePath = "Shared/Math/Curves/Curve.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "traceAsPoints(startX:endX:nOfSamples:bias:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -121,6 +121,37 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x1a8519d70">
             <Locations>
+               <Location
+                  uuid = "16D42A28-7199-4166-BA4D-A12D2077D783 - 2fe296495e5cbede"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "IOHIDServiceClientCopyProperty"
+                  moduleName = "IOKit"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "112">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -133,6 +164,37 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x1a8519db0">
             <Locations>
+               <Location
+                  uuid = "A189ADAF-88DC-4B37-8E08-790EF6F69C6E - 2fe296495e5cbede"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "IOHIDServiceClientCopyProperty"
+                  moduleName = "IOKit"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "176">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -145,6 +207,37 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x1a851a0d4">
             <Locations>
+               <Location
+                  uuid = "6D66B26C-7EE0-4322-9CBD-167A74DB3B08 - 3eba37b8530b0ab2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "_IOHIDEventSystemClientCopyPropertyForService"
+                  moduleName = "IOKit"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "220">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -157,6 +250,37 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x1a851a140">
             <Locations>
+               <Location
+                  uuid = "1D37ECAE-7C0A-4954-A5A8-72F27863605B - 3eba37b8530b0ab2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "_IOHIDEventSystemClientCopyPropertyForService"
+                  moduleName = "IOKit"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "328">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -169,6 +293,16 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x1c20757a4">
             <Locations>
+               <Location
+                  uuid = "18559DDB-3D30-45DC-8963-2114AF461FF1 - d5e724a9d00fcf30"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[HIDServiceClient(HIDFramework) setProperty:forKey:]"
+                  moduleName = "HID"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -186,6 +320,38 @@
             endingLineNumber = "254"
             landmarkName = "handleDeviceMatching(context, result, sender, device)"
             landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "B7816532-665A-4C9C-A35D-6C4592137B57 - e7510ef7cf5db04a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "handleDeviceMatching"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mac-mouse-fix/Shared/Devices/DeviceManager.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "271"
+                  endingLineNumber = "271"
+                  offsetFromSymbolStart = "508">
+               </Location>
+               <Location
+                  uuid = "B7816532-665A-4C9C-A35D-6C4592137B57 - e7510ef7cf5db29d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "handleDeviceMatching"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mac-mouse-fix/Shared/Devices/DeviceManager.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "254"
+                  endingLineNumber = "254"
+                  offsetFromSymbolStart = "348">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -218,6 +384,38 @@
             endingLineNumber = "131"
             landmarkName = "coolHideTab(identifier:window:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C9D6471B-9FD5-49EC-B549-FD47CD53E81D - a45690b085a8abd3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Mac_Mouse_Fix.TabViewController.coolHideTab(identifier: Swift.String, window: Swift.Optional&lt;__C.NSWindow&gt;) -&gt; ()"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/App/UI/Main/TabViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "2824">
+               </Location>
+               <Location
+                  uuid = "C9D6471B-9FD5-49EC-B549-FD47CD53E81D - a45690b085a8abd3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Mac_Mouse_Fix.TabViewController.coolHideTab(identifier: Swift.String, window: Swift.Optional&lt;__C.NSWindow&gt;) -&gt; ()"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/App/UI/Main/TabViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "2776">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -234,16 +432,78 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "4A1C81AD-D0CF-4AB4-A608-20EE23326DA6"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Helper/Core/Scroll/Scroll.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "+resetState"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "4A1C81AD-D0CF-4AB4-A608-20EE23326DA6 - 7bba6f516e51e48e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[Scroll resetState]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Core/Scroll/Scroll.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "96"
+                  endingLineNumber = "96"
+                  offsetFromSymbolStart = "24">
+               </Location>
+               <Location
+                  uuid = "4A1C81AD-D0CF-4AB4-A608-20EE23326DA6 - 6ddbbb3f11bb9d77"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__20+[Scroll resetState]_block_invoke"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Core/Scroll/Scroll.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "97"
+                  endingLineNumber = "97"
+                  offsetFromSymbolStart = "24">
+               </Location>
+               <Location
+                  uuid = "4A1C81AD-D0CF-4AB4-A608-20EE23326DA6 - 7bba6f516e51e48e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[Scroll resetState]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Core/Scroll/Scroll.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "96"
+                  endingLineNumber = "96"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "4A1C81AD-D0CF-4AB4-A608-20EE23326DA6 - 6ddbbb3f11bb9ada"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__20+[Scroll resetState]_block_invoke"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Core/Scroll/Scroll.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "110"
+                  endingLineNumber = "110"
+                  offsetFromSymbolStart = "8">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -260,6 +520,38 @@
             endingLineNumber = "153"
             landmarkName = "+postMouseButtonClicks:nOfClicks:"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "4CDEB0E7-0BFE-42BA-8DD4-48693C58FFC4 - e33c3f9b1eb8d776"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[ModificationUtility postMouseButtonClicks:nOfClicks:]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Utility/ModificationUtility.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "153"
+                  endingLineNumber = "153"
+                  offsetFromSymbolStart = "176">
+               </Location>
+               <Location
+                  uuid = "4CDEB0E7-0BFE-42BA-8DD4-48693C58FFC4 - e33c3f9b1eb8d0b0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "+[ModificationUtility postMouseButtonClicks:nOfClicks:]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Helper/Utility/ModificationUtility.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "155"
+                  endingLineNumber = "155"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -340,277 +632,376 @@
             endingLineNumber = "321"
             landmarkName = "_checkLicense(key:licenseConfig:incrementUsageCount:completionHandler:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0D8ABE4C-8D6B-4A0D-8C93-24EDF1C9E3B0 - 54b030b4990dadcd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, Swift.Optional&lt;__C.NSError&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;) -&gt; () in static Mac_Mouse_Fix.License._checkLicense(key: Swift.Optional&lt;Swift.String&gt;, licenseConfig: Mac_Mouse_Fix.LicenseConfig, incrementUsageCount: Swift.Bool, completionHandler: (Swift.Bool, __C.MFValueFreshness, __C.MFLicenseReason, Swift.Optional&lt;__C.NSError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/License/License.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "326"
+                  endingLineNumber = "326"
+                  offsetFromSymbolStart = "324">
+               </Location>
+               <Location
+                  uuid = "0D8ABE4C-8D6B-4A0D-8C93-24EDF1C9E3B0 - 54b030b4990daa68"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, Swift.Optional&lt;__C.NSError&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;) -&gt; () in static Mac_Mouse_Fix.License._checkLicense(key: Swift.Optional&lt;Swift.String&gt;, licenseConfig: Mac_Mouse_Fix.LicenseConfig, incrementUsageCount: Swift.Bool, completionHandler: (Swift.Bool, __C.MFValueFreshness, __C.MFLicenseReason, Swift.Optional&lt;__C.NSError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/License/License.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "321"
+                  endingLineNumber = "321"
+                  offsetFromSymbolStart = "312">
+               </Location>
+               <Location
+                  uuid = "0D8ABE4C-8D6B-4A0D-8C93-24EDF1C9E3B0 - e387ce82e12adce3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, Swift.Optional&lt;__C.NSError&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;) -&gt; () in static Mac_Mouse_Fix_Helper.License._checkLicense(key: Swift.Optional&lt;Swift.String&gt;, licenseConfig: Mac_Mouse_Fix_Helper.LicenseConfig, incrementUsageCount: Swift.Bool, completionHandler: (Swift.Bool, __C.MFValueFreshness, __C.MFLicenseReason, Swift.Optional&lt;__C.NSError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/License/License.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "321"
+                  endingLineNumber = "321"
+                  offsetFromSymbolStart = "312">
+               </Location>
+               <Location
+                  uuid = "0D8ABE4C-8D6B-4A0D-8C93-24EDF1C9E3B0 - e387ce82e12adb46"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, Swift.Optional&lt;__C.NSError&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;) -&gt; () in static Mac_Mouse_Fix_Helper.License._checkLicense(key: Swift.Optional&lt;Swift.String&gt;, licenseConfig: Mac_Mouse_Fix_Helper.LicenseConfig, incrementUsageCount: Swift.Bool, completionHandler: (Swift.Bool, __C.MFValueFreshness, __C.MFLicenseReason, Swift.Optional&lt;__C.NSError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/License/License.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "326"
+                  endingLineNumber = "326"
+                  offsetFromSymbolStart = "324">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Shared/Config/Config.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "478"
+            endingLineNumber = "478"
+            landmarkName = "-repairConfigWithReason:info:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - 1bcac52bb04589ac"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithProblem:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "465"
+                  endingLineNumber = "465"
+                  offsetFromSymbolStart = "1284">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d2ba"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "465"
+                  endingLineNumber = "465"
+                  offsetFromSymbolStart = "1780">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d2ba"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "465"
+                  endingLineNumber = "465"
+                  offsetFromSymbolStart = "2124">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d17c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "467"
+                  endingLineNumber = "467"
+                  offsetFromSymbolStart = "2180">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d026"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "477"
+                  endingLineNumber = "477"
+                  offsetFromSymbolStart = "1228">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - 9041afb9448d27e7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "467"
+                  endingLineNumber = "467"
+                  offsetFromSymbolStart = "2232">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d17c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "467"
+                  endingLineNumber = "467"
+                  offsetFromSymbolStart = "2232">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - 9041afb9448d26bd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "477"
+                  endingLineNumber = "477"
+                  offsetFromSymbolStart = "2464">
+               </Location>
+               <Location
+                  uuid = "7404D803-330D-42F4-BA46-4627D1CCFC36 - b57883f71533d026"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "477"
+                  endingLineNumber = "477"
+                  offsetFromSymbolStart = "2464">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Shared/Config/Config.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "453"
+            endingLineNumber = "453"
+            landmarkName = "-repairConfigWithReason:info:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - b57883f71533ccab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "450"
+                  endingLineNumber = "450"
+                  offsetFromSymbolStart = "1696">
+               </Location>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - b57883f71533ccab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "450"
+                  endingLineNumber = "450"
+                  offsetFromSymbolStart = "1848">
+               </Location>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - b57883f71533d36d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "452"
+                  endingLineNumber = "452"
+                  offsetFromSymbolStart = "1904">
+               </Location>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - b57883f71533d36d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "452"
+                  endingLineNumber = "452"
+                  offsetFromSymbolStart = "1016">
+               </Location>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - 9041afb9448d25f6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix Helper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "452"
+                  endingLineNumber = "452"
+                  offsetFromSymbolStart = "1836">
+               </Location>
+               <Location
+                  uuid = "B8DE2901-2223-4ACD-BAD5-4AAC7C61E8BC - b57883f71533d36d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[Config repairConfigWithReason:info:]"
+                  moduleName = "Mac Mouse Fix"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Noah/Desktop/mmf-stuff/mac-mouse-fix/Shared/Config/Config.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "452"
+                  endingLineNumber = "452"
+                  offsetFromSymbolStart = "1836">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "63ABD5E2-B81D-46E8-9D42-1C357E61AB48"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Shared/Config/Config.m"
+            filePath = "Helper/HelperState.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "452"
-            endingLineNumber = "452"
-            landmarkName = "-repairConfigWithReason:info:"
+            startingLineNumber = "139"
+            endingLineNumber = "139"
+            landmarkName = "updateDisplayUnderMousePointer(event:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F9B818D3-960C-4B07-B581-0AAEDA60AF4F"
+            uuid = "A793345D-80F2-47A7-9829-8C11F2B126B1"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Shared/License/License.swift"
+            filePath = "Helper/State/HelperState.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "355"
-            endingLineNumber = "355"
-            landmarkName = "_checkLicense(key:licenseConfig:incrementUsageCount:completionHandler:)"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
+            landmarkName = "deriveFrontmostApp()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "911C0E9B-27C8-47D6-8FBD-0AEA1574776B"
+            uuid = "94589DAC-C63A-4C79-BDDF-1AC95A9B88C1"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Shared/License/License.swift"
+            filePath = "Helper/State/HelperState.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "347"
-            endingLineNumber = "347"
-            landmarkName = "_checkLicense(key:licenseConfig:incrementUsageCount:completionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DAE85652-69D3-4832-B20B-80887E16C707"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Animation/DisplayLink.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "843"
-            endingLineNumber = "843"
-            landmarkName = "parseTimeStamp(ts)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E9AC7F00-F855-4FC6-A0A1-5F2112A8D3B3"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Animation/DisplayLink.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "499"
-            endingLineNumber = "499"
-            landmarkName = "displayLinkCallback(displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D864760F-C3A8-4B6F-A516-5976D8DE8071"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Animation/DisplayLink.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "487"
-            endingLineNumber = "487"
-            landmarkName = "displayLinkCallback(displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FFDC12A4-44E4-4164-9D53-58264022B0FF"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "App/UI/Main/Tabs/GeneralTabController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4250FC6B-5C82-4989-8A08-754E87F531DA"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "App/UI/Main/Tabs/GeneralTabController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "58527CD1-BF8D-4FF4-843D-86DDA360DF8B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "App/UI/Main/Tabs/GeneralTabController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "935B4785-8A1C-4447-8A14-946ABE61F266"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Helper/Core/Scroll/ScrollAnalyzer.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "181"
-            endingLineNumber = "181"
-            landmarkName = "+updateWithTickOccuringAt:direction:config:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C1809429-3E1E-4818-BC4D-89948886E5E8"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Helper/Core/Scroll/Scroll.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "629"
-            endingLineNumber = "629"
-            landmarkName = "heavyProcessing(event, scrollDeltaAxis1, scrollDeltaAxis2, tickTS)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "82599E3B-E440-4762-8996-6AB572CAF823"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Helper/Core/Scroll/Scroll.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "625"
-            endingLineNumber = "625"
-            landmarkName = "heavyProcessing(event, scrollDeltaAxis1, scrollDeltaAxis2, tickTS)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "96FAED13-11F4-4A76-B4C5-AFB887E53991"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Math/Math.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "149"
-            endingLineNumber = "149"
-            landmarkName = "scale(value:from:to:allowOutOfBounds:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B9B7C82E-2D11-4165-B14D-0581D8FBD9D6"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Helper/Core/Scroll/Scroll.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "596"
-            endingLineNumber = "596"
-            landmarkName = "heavyProcessing(event, scrollDeltaAxis1, scrollDeltaAxis2, tickTS)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1ABF3A08-214A-4BC5-9081-4FBE1972519E"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Helper/Core/Config/ScrollConfig.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "635"
-            endingLineNumber = "635"
-            landmarkName = "animationCurveParamsMap(name:)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "BD6AF043-BE25-4FE5-B404-E1E1F5F1DF17"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Config/Config.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "442"
-            endingLineNumber = "442"
-            landmarkName = "-repairConfigWithReason:info:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A3C8E767-A932-4F1A-8506-8A5C20EB7DB0"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Shared/Config/Config.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "391"
-            endingLineNumber = "391"
-            landmarkName = "-repairConfigWithReason:info:"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "deriveAppUnderMousePointer()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

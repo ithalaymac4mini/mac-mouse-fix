@@ -152,7 +152,10 @@ import CocoaLumberjackSwift
             self.isFirstCallback = true
             
             /// Configure displayLink
-            ///     I feel like this somehow makes the animation more stuttery?
+            ///
+            /// Notes:
+            /// - I feel like this somehow makes the animation more stuttery? Turning this off.
+            /// - (Sep 2024) We're not linking the displayLink to a specific display at all. Won't this cause problems especially with 120Hz or Pro Motion displays?
 //            self.displayLink.linkToMainScreen_Unsafe()
             
             /// Start displayLink
@@ -243,8 +246,11 @@ import CocoaLumberjackSwift
     @objc func resetSubPixelator() {
         self.pixelator.reset()
     }
-    @objc func linkToMainScreen() {
-        self.displayLink.linkToMainScreen()
+//    @objc func linkToMainScreen() {
+//        self.displayLink.linkToMainScreen()
+//    }
+    @objc func linkToDisplay(_ dsp: CGDirectDisplayID) {
+        self.displayLink.setDisplay(dsp)
     }
     @objc func isRunning() -> Bool {
         return self.displayLink.isRunning()
