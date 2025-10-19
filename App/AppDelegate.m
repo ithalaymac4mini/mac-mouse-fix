@@ -23,6 +23,7 @@
 #import "NSAttributedString+Additions.h"
 #import "Mac_Mouse_Fix-Swift.h"
 #import "Locator.h"
+#import "EventUtility.h"
 
 @interface AppDelegate ()
 
@@ -44,12 +45,12 @@
 
 - (IBAction)buyMMF:(id)sender {
     
-    [LicenseConfig getOnComplete:^(LicenseConfig * _Nonnull licenseConfig) {
+    [GetLicenseConfig getWith_callingFunc:NSStringFromSelector(_cmd) completionHandler:^(MFLicenseConfig * _Nonnull licenseConfig) {
             
-            NSLocale *locale = NSLocale.currentLocale;
-            BOOL useQuickLink = NO;
-            
-            [LicenseUtility buyMMFWithLicenseConfig:licenseConfig locale:locale useQuickLink:useQuickLink];
+        NSLocale *locale = NSLocale.currentLocale;
+        BOOL useQuickLink = NO;
+        
+        [LicenseUtility buyMMFWithLicenseConfig:licenseConfig locale:locale useQuickLink:useQuickLink];
     }];
 }
 
@@ -214,7 +215,7 @@ static NSDictionary *sideButtonActions;
         
         eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseDown handler:^NSEvent * _Nullable(NSEvent * _Nonnull event) {
             
-            uint64_t senderID = CGEventGetIntegerValueField(event.CGEvent, (CGEventField)kMFCGEventFieldSenderID);
+            uint64_t senderID = CGEventGetSenderID(event.CGEvent);
             [MFMessagePort sendMessage:@"updateActiveDeviceWithEventSenderID" withPayload:@(senderID) waitForReply:NO];
             
             return event;
